@@ -2,6 +2,7 @@ import requests
 from dataclasses import dataclass
 from typing import Dict
 from config_reader import config
+import json
 
 
 class Base():
@@ -15,25 +16,30 @@ class Base():
     
     def make_data(self, text):
         self.data = {
-          "modelUri": "gpt://b1gjnrav3hvkeoq9lgdr/summarization/latest",
-          "completionOptions": {
-            "stream": "FloatingPointErroralse",
-            "temperature": 0.1,
-            "maxTokens": "1000"
-          },
-          "messages": [
-            {
-              "role": "user",
-              "text": text
-            }
-          ]
+            "modelUri": "gpt://b1gjnrav3hvkeoq9lgdr/summarization/latest",
+            "completionOptions": {
+                "stream": False,
+                "temperature": "0.6",
+                "maxTokens": "2000"
+            },
+            "messages": [
+                {
+                "role": "system",
+                "text": "Найди ошибки в тексте и исправь их"
+                },
+                {
+                "role": "user",
+                "text": text
+                }
+            ]
         }
-        return self.data
+        return json.dumps(self.data)
     
     def predict(self, text: str) -> Dict[str, str]:
-        response = requests.post(
-            url=self.url,
-            headers=self.headers,
+        response = requests.request(
+            "POST", 
+            self.url, 
+            headers=self.headers, 
             data=self.make_data(text)
         )
         jsn = response.json()
