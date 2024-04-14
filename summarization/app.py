@@ -36,35 +36,35 @@ async def root():
     return {"message": message}
 
 @app.post("/get_summarization")
-async def get_summarization(data: Dict[str, str]) -> TextOutput:
+async def get_summarization(data: Dict[str, List[str]]) -> TextOutput:
     model = MODELS["text_summarizer"]
-    text = data["text"]
-    predict = model(text=text)
+    text_arr = data["text_arr"]
+    predict = model(text_arr=text_arr)
     response = TextOutput(
         summarized_text=predict.summarized_text,
     )
     return response
 
 @app.post("/get_header")
-async def get_header(data: Dict[str, str]) -> HeaderOutput:
+async def get_header(data: Dict[str, List[str]]) -> HeaderOutput:
     model = MODELS["header_summarizer"]
-    text = data["text"]
-    predict = model(text=text)
+    text_arr = data["text_arr"]
+    predict = model(text_arr=text_arr)
     response = HeaderOutput(
         summarized_header=predict.summarized_header,
     )
     return response
 
 @app.post("/get_card")
-async def get_header(data: Dict[str, str]) -> CardOutput:
-    text = data["text"]
-    header_predict = MODELS["header_summarizer"](text=text)
-    text_predict = MODELS["text_summarizer"](text=text)
+async def get_header(data: Dict[str, List[str]]) -> CardOutput:
+    text_arr = data["text_arr"]
+    header_predict = MODELS["header_summarizer"](text_arr=text_arr)
+    text_predict = MODELS["text_summarizer"](text_arr=text_arr)
     header = header_predict.summarized_header
-    text_arr = text_predict.summarized_text.split("\n")
+    new_text_arr = text_predict.summarized_text.replace("- ", "").split("\n")
     response = CardOutput(
         header=header,
-        text_arr=text_arr,
+        text_arr=new_text_arr,
     )
     return response
 

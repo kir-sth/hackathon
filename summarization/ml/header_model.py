@@ -1,7 +1,7 @@
 import json
 import requests
 from dataclasses import dataclass
-from typing import Dict
+from typing import Dict, List
 
 from config_reader import config
 
@@ -15,7 +15,20 @@ class Base():
             "Authorization": "Bearer " + config.iam_token.get_secret_value()
         }
     
-    def make_data(self, text):
+    def make_data(self, text_arr):
+        message = [
+            {
+                "role": "system",
+                "text": "Придумай 3 заголовка для текста. Заголовок должен состоять максимум из 5 слов"
+            }
+        ]
+        for text in text_arr:
+            message.append(
+                {
+                    "role": "user",
+                    "text": text
+                }
+            )
         self.data = {
             "modelUri": "gpt://b1gjnrav3hvkeoq9lgdr/yandexgpt-lite/latest",
             "completionOptions": {
@@ -23,25 +36,16 @@ class Base():
                 "temperature": "0.6",
                 "maxTokens": "2000"
             },
-            "messages": [
-                {
-                "role": "system",
-                "text": "Придумай заголовок для текста. Заголовок должен состоять максимум из 5 слов"
-                },
-                {
-                "role": "user",
-                "text": text
-                }
-            ]
+            "messages": message
         }
         return json.dumps(self.data)
     
-    def predict(self, text: str) -> Dict[str, str]:
+    def predict(self, text_arr: str) -> Dict[str, str]:
         response = requests.request(
             "POST", 
             self.url, 
             headers=self.headers, 
-            data=self.make_data(text)
+            data=self.make_data(text_arr)
         )
         jsn = response.json()
         summarized_header = jsn["result"]["alternatives"][0]["message"]["text"]
@@ -59,8 +63,8 @@ class Prediction:
 
 
 def load_model():
-    def model(text: str) -> Prediction:
-        prediction = base.predict(text=text)
+    def model(text_arr: List[str]) -> Prediction:
+        prediction = base.predict(text_arr=text_arr)
         return Prediction(
             summarized_header=prediction["summarized_header"],
         )
