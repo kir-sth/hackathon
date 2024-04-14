@@ -1,8 +1,9 @@
+import json
 import requests
 from dataclasses import dataclass
 from typing import Dict
+
 from config_reader import config
-import json
 
 
 class Base():
