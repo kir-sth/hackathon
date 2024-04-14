@@ -11,7 +11,6 @@ MODELS = {}
 
 class OutputData(BaseModel):
     text: str
-    prompt: str
     summarized_text: str
 
 
@@ -32,11 +31,9 @@ async def root():
 async def predict_recomendation(data: Dict[str, str]) -> OutputData:
     model = MODELS["summarizer"]
     text = data["text"]
-    prompt = data["prompt"]
-    predict = model(text=text, prompt=prompt)
+    predict = model(text=text)
     response = OutputData(
         text=text,
-        prompt=prompt,
         summarized_text=predict.summarized_text,
     )
     return response
