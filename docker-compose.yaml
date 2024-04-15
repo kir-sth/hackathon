@@ -1,0 +1,32 @@
+version: '3.12'
+
+services:
+    inference_manager:
+        container_name: inference_manager
+        image: iinference_manager
+        build:
+            context: ./inference_manager/
+            dockerfile: Dockerfile
+        depends_on:
+            - summarization
+        ports:
+            - 4000:4000
+        volumes:
+          - ./logs:/~/hackathon/logs
+        restart: on-failure
+    summarization:
+        container_name: summarization
+        image: isummarization
+        build:
+            context: ./summarization/
+            dockerfile: Dockerfile
+        env_file:
+            - summarization/.env
+        ports:
+            - 8000:8000
+        volumes:
+          - ./logs:/~/hackathon/logs
+        restart: on-failure
+
+volumes:
+    logs:

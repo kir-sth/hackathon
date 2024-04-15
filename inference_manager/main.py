@@ -8,7 +8,7 @@ from typing import Dict, List
 app = FastAPI()
 
 # mock data
-with open("mock_data.json", "r") as f:
+with open("inference_manager/mock_data.json", "r") as f:
     mock_data = json.load(f)
 
 
