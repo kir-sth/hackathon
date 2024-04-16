@@ -1,0 +1,29 @@
+{
+  "name": "raw-bot",
+  "version": "1.0.0",
+  "description": "tg bot",
+  "type": "module",
+  "imports": {
+    "#root/*": "./build/src/*"
+  },
+  "scripts": {
+    "build": "tsc --noEmit false",
+    "dev": "tsc-watch --onSuccess \"tsx ./scripts/start.ts\"",
+    "start": "tsc && tsx ./scripts/start.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grammyjs/conversations": "^1.2.0",
+    "@grammyjs/storage-free": "^2.4.2",
+    "dotenv": "^16.4.5",
+    "fastify": "^4.26.2",
+    "grammy": "^1.21.2",
+    "node-graceful-shutdown": "^1.1.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.2",
+    "tsc-watch": "^6.2.0",
+    "typescript": "^5.3.2"
+  }
+}
