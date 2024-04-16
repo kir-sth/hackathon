@@ -1,0 +1,3 @@
+rootProject.name = 'tg-scraper'
+include 'tg-scraper-api'
+
