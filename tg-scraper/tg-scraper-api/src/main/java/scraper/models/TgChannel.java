@@ -1,20 +1,27 @@
-package scraper.services.getuserchannels;
-
-import java.util.List;
+package scraper.models;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Data;
-import scraper.services.models.Channel;
 
 @Data
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class UserChannelsResponse {
+public class TgChannel {
+
+    @Nullable
+    String title;
+
+    @Nullable
+    String description;
+
+    @Nullable
+    Integer userCnt;
 
     @Nonnull
-    List<Channel> channels;
+    String channelName;
 }

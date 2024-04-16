@@ -1,4 +1,4 @@
-package scraper.services;
+package scraper.rest.services;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

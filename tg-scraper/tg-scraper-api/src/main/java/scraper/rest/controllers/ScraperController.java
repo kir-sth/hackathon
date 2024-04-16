@@ -1,13 +1,5 @@
-package scraper.controllers;
+package scraper.rest.controllers;
 
-import java.util.Collection;
-import java.util.List;
-
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,13 +11,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import scraper.services.ScraperService;
-import scraper.services.getchannelposts.ChannelPostsRequest;
-import scraper.services.getchannelposts.ChannelPostsResponse;
-import scraper.services.getuserchannels.UserChannelsRequest;
-import scraper.services.getuserchannels.UserChannelsResponse;
-import scraper.services.models.Channel;
-import scraper.services.subscribe.SubscribeRequest;
+import scraper.models.TgChannel;
+import scraper.rest.services.ScraperService;
+import scraper.rest.services.getchannelposts.ChannelPostsRequest;
+import scraper.rest.services.getchannelposts.ChannelPostsResponse;
+import scraper.rest.services.getuserchannels.UserChannelsRequest;
+import scraper.rest.services.getuserchannels.UserChannelsResponse;
+import scraper.rest.services.subscribe.SubscribeRequest;
 
 @Slf4j
 @CrossOrigin(allowedHeaders = "*")
@@ -74,7 +66,7 @@ public class ScraperController {
             @RequestParam(name = "channel_name", required = false) String channelName
     ) {
         ChannelPostsRequest channelPostsRequest = ChannelPostsRequest.builder()
-                .channel(Channel.builder()
+                .channel(TgChannel.builder()
                         .channelName(channelName)
                         .build())
                 .build();

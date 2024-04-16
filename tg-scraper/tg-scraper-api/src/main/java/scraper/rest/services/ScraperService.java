@@ -1,4 +1,4 @@
-package scraper.services;
+package scraper.rest.services;
 
 import java.util.List;
 import java.util.Objects;
@@ -7,11 +7,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import org.springframework.stereotype.Component;
-import scraper.MockData;
-import scraper.services.getchannelposts.ChannelPostsRequest;
-import scraper.services.getchannelposts.ChannelPostsResponse;
-import scraper.services.getuserchannels.UserChannelsRequest;
-import scraper.services.getuserchannels.UserChannelsResponse;
+import scraper.rest.MockData;
+import scraper.rest.services.getchannelposts.ChannelPostsRequest;
+import scraper.rest.services.getchannelposts.ChannelPostsResponse;
+import scraper.rest.services.getuserchannels.UserChannelsRequest;
+import scraper.rest.services.getuserchannels.UserChannelsResponse;
 
 @Component
 @ParametersAreNonnullByDefault

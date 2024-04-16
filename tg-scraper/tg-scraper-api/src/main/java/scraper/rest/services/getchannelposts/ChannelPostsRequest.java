@@ -1,20 +1,30 @@
-package scraper.services.getuserchannels;
+package scraper.rest.services.getchannelposts;
 
+import java.time.LocalDateTime;
+
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Data;
+import scraper.models.TgChannel;
 
 @Data
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class UserChannelsRequest {
+public class ChannelPostsRequest {
+
+    @Nonnull
+    TgChannel channel;
 
     @Nullable
-    String userId;
+    LocalDateTime dateFrom;
 
     @Nullable
-    String username;
+    LocalDateTime dateTo;
+
+    @Nullable
+    Integer limit;
 }

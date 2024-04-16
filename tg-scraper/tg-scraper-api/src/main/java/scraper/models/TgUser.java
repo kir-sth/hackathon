@@ -1,4 +1,4 @@
-package scraper.services.models;
+package scraper.models;
 
 import javax.annotation.Nullable;
 
@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class User {
+public class TgUser {
 
     @Nullable
     String id;
