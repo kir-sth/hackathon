@@ -1,0 +1,67 @@
+plugins {
+    id 'java'
+    id 'java-library'
+    id "io.freefair.lombok" version "6.6.1"
+    id 'org.springframework.boot' version '3.0.1'
+    id 'io.spring.dependency-management' version '1.1.0'
+}
+
+group 'scraper'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-parent:3.2.3'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+
+    implementation("org.springframework.boot:spring-boot-starter-quartz")
+
+    implementation 'org.hibernate:hibernate-core:6.4.4.Final'
+    implementation 'org.hibernate:hibernate-validator:8.0.1.Final'
+
+//    implementation 'com.h2database:h2'
+//    implementation 'org.apache.openjpa:openjpa:4.0.0'
+
+//    implementation 'org.springframework.security:spring-security-core:6.2.4'
+
+//    implementation 'org.springframework.boot:spring-boot-starter-validation'
+//    implementation 'org.springframework.boot:spring-boot-devtools'
+//    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+
+//    implementation "com.github.pengrad:java-telegram-bot-api:7.2.0"
+    implementation "org.jsoup:jsoup:1.17.2"
+//    implementation 'javax.servlet:javax.servlet-api:4.0.1'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    implementation 'com.google.guava:guava:33.1.0-jre'
+
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
+    implementation 'org.postgresql:postgresql:42.7.3'
+    implementation 'org.json:json:20240303'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'scraper.Application'
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    } {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
+    with jar
+}
+
+test {
+    useJUnitPlatform()
+}
