@@ -20,7 +20,7 @@ public interface ChannelDao extends JpaRepository<TgChannel, Long> {
                 .map(l -> this.findOne(Example.of(channelReq)))
                 .get()
                 .orElse(channelReq);
-        return this.saveAndFlush(channelReq);
+        return this.saveAndFlush(channel);
     }
 
     @Query(

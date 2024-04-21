@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.Column;
@@ -57,6 +58,11 @@ public class TgPost {
 
     @Nullable
     Integer viewCount;
+
+    @JsonProperty("link")
+    public String getLink() {
+        return String.format("https://t.me/%s/%d", channelName, id);
+    };
 
     @Data
     @AllArgsConstructor

@@ -46,6 +46,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import static java.util.stream.Collectors.toList;
 import static org.quartz.TriggerBuilder.newTrigger;
 
 @Slf4j
@@ -91,8 +92,9 @@ public class ScraperController {
                 .channelName(subscribeRequest.getChannelName())
                 .build();
         channel = channelDao.upsert(channel);
-        subscriptionDao.subscribe(account, channel);
-        return ResponseEntity.ok().build();
+        return convertToResponseEntity(
+                subscriptionDao.subscribe(account, channel)
+        );
     }
 
     @PostMapping("unsubscribe")
@@ -112,8 +114,22 @@ public class ScraperController {
         if (account == null || channel == null) {
             return ResponseEntity.status(HttpStatus.GONE).build();
         }
-        subscriptionDao.unsubscribe(account, channel);
-        return ResponseEntity.ok().build();
+        return convertToResponseEntity(
+                subscriptionDao.unsubscribe(account, channel)
+        );
+    }
+
+    private ResponseEntity<Object> convertToResponseEntity(
+            SubscriptionDao.SubscriptionStatus subscriptionStatus
+    ) {
+        return switch (subscriptionStatus) {
+            case ALREADY_BEEN_SUBSCRIBED, ALREADY_BEEN_UNSUBSCRIBED ->
+                    ResponseEntity
+                            .status(HttpStatus.ALREADY_REPORTED)
+                            .body(subscriptionStatus.toObject());
+            case SUCCESSFUL_SUBSCRIBED, SUCCESSFUL_UNSUBSCRIBED -> ResponseEntity.ok(subscriptionStatus.toObject());
+            default -> ResponseEntity.unprocessableEntity().build();
+        };
     }
 
     @GetMapping("account-posts")
@@ -147,7 +163,10 @@ public class ScraperController {
                 .collect(Collectors.toMap(TgChannel::getId, TgChannel::getChannelName));
 
         Map<String, List<TgPost>> postsByChannelName = posts.stream()
-                .collect(Collectors.groupingBy(p -> channels.get(p.getChannelId())));
+                .collect(Collectors.groupingBy(
+                        p -> channels.get(p.getChannelId()),
+                        Collectors.mapping(t -> t, toList())
+                ));
 
         AccountPostsResponse result = AccountPostsResponse.builder()
                 .accountLogin(account.get().getLogin())
@@ -159,7 +178,9 @@ public class ScraperController {
 
     @SneakyThrows
     @GetMapping("scrap")
-    public ResponseEntity<Object> scrap() {
+    public ResponseEntity<Object> scrap(
+            @RequestParam(required = false, defaultValue = "false") Boolean wait
+    ) {
         String jobName = "scrapJob";
         final JobKey jobKey = scheduler.getJobKeys(GroupMatcher.anyGroup()).stream()
                 .filter(key -> jobName.equalsIgnoreCase(
@@ -175,11 +196,15 @@ public class ScraperController {
                 .build();
 
         try {
+            if (wait) {
+                scraperService.scrapAll();
+                return ResponseEntity.ok().body("OK");
+            }
             scheduler.scheduleJob(startNowTrigger);
         } catch (JobPersistenceException jobPersistenceException) {
             log.info("Job {} is already running", jobName);
         }
 
-        return ResponseEntity.ok().body("OK");
+        return ResponseEntity.accepted().body("In progress");
     }
 }

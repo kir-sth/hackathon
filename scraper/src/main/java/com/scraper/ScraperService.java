@@ -53,7 +53,7 @@ public class ScraperService {
                 Long lastPostId = posts.stream()
                         .map(TgPost::getId)
                         .max(Long::compareTo)
-                        .orElse(null);
+                        .orElse(channel.getLastPostId());
                 webChannel = webChannel.toBuilder()
                         .id(channel.getId())
                         .lastPostId(lastPostId)

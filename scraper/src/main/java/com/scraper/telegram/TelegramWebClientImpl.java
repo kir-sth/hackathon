@@ -7,10 +7,12 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -109,8 +111,18 @@ public class TelegramWebClientImpl implements TelegramWebClient, InitializingBea
 
     private List<TgPost> requestAfterPosts(Long channelId, String channelName, long afterId) {
         return request(String.format("https://t.me/s/%s?after=%d", channelName, afterId))
-                .map(html -> parser.parseMessages(channelId, html))
-                .orElseGet(List::of);
+                .map(html -> {
+                    try {
+                        return parser.parseMessages(channelId, html);
+                    } catch (Throwable ex) {
+                        log.error(ex.getMessage(), ex);
+                        return null;
+                    }
+                })
+                .orElseGet(List::of)
+                .stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     private Optional<String> request(String url) {
