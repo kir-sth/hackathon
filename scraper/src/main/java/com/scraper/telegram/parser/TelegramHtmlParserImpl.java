@@ -25,6 +25,7 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
 import static com.scraper.models.TgPost.MAX_LENGTH_TEXT;
+import static com.scraper.models.TgPost.MAX_LENGTH_TITLE;
 
 @Slf4j
 @Component
@@ -50,19 +51,24 @@ public class TelegramHtmlParserImpl implements TelegramHtmlParser {
                         String usersStr = usersTag.text().replaceAll("\\D", "");
                         if (!usersStr.isBlank()) {
                             int userCnt = Integer.parseInt(usersStr);
-                            if (descriptionTag.size() == 1) {
-                                String description = replaceBrTags(descriptionTag).trim();
-                                return TgChannel.builder()
-                                        .channelName(name)
-                                        .title(title)
-                                        .description(description)
-                                        .userCnt(userCnt)
-                                        .build();
-                            }
+                            return TgChannel.builder()
+                                    .channelName(name)
+                                    .title(cutTitleIfNeed(title))
+                                    .description(buildDescription(descriptionTag))
+                                    .userCnt(userCnt)
+                                    .build();
                         }
                     }
                 }
             }
+        }
+        return null;
+    }
+
+    @Nullable
+    private String buildDescription(Elements descriptionTag) {
+        if (descriptionTag.size() == 1) {
+            return cutTextIfNeed(replaceBrTags(descriptionTag).trim());
         }
         return null;
     }
@@ -101,7 +107,7 @@ public class TelegramHtmlParserImpl implements TelegramHtmlParser {
                         .channelId(channelId)
                         .channelName(channel)
                         .type(postType(messageWidget))
-                        .text(cutIfNeed(replaceBrTags(textWidget).trim()))
+                        .text(cutTextIfNeed(replaceBrTags(textWidget).trim()))
                         .moment(publishDate(messageWidget))
                         .viewCount(views)
                         .build();
@@ -113,7 +119,11 @@ public class TelegramHtmlParserImpl implements TelegramHtmlParser {
         }
     }
 
-    private String cutIfNeed(String text) {
+    private String cutTitleIfNeed(String title) {
+        return title.length() > MAX_LENGTH_TITLE ? title.substring(0, MAX_LENGTH_TITLE) : title;
+    }
+
+    private String cutTextIfNeed(String text) {
         return text.length() > MAX_LENGTH_TEXT ? text.substring(0, MAX_LENGTH_TEXT) : text;
     }
 

@@ -35,6 +35,7 @@ import lombok.NoArgsConstructor;
 @IdClass(TgPost.TgPostPK.class)
 public class TgPost {
 
+    public static final int MAX_LENGTH_TITLE = 500;
     public static final int MAX_LENGTH_TEXT = 10_000;
 
     @Id
