@@ -18,6 +18,9 @@ import com.scraper.dao.AccountDao;
 import com.scraper.dao.ChannelDao;
 import com.scraper.dao.PostDao;
 import com.scraper.dao.SubscriptionDao;
+import com.scraper.gpt.GptClient;
+import com.scraper.gpt.yandexgpt.YandexGptRequest;
+import com.scraper.gpt.yandexgpt.YandexGptResponse;
 import com.scraper.models.TgAccount;
 import com.scraper.models.TgChannel;
 import com.scraper.models.TgPost;
@@ -62,7 +65,7 @@ public class ScraperController {
     private final SubscriptionDao subscriptionDao;
     private final PostDao postDao;
     private final Scheduler scheduler;
-//    private final JobsRegistrar registrar;
+    private final GptClient gptClient;
 
     public ScraperController(
             @Autowired ScraperService scraperService,
@@ -70,14 +73,15 @@ public class ScraperController {
             @Autowired ChannelDao channelDao,
             @Autowired SubscriptionDao subscriptionDao,
             @Autowired PostDao postDao,
-            @Autowired Scheduler scheduler
-    ) {
+            @Autowired Scheduler scheduler,
+            GptClient gptClient) {
         this.scraperService = scraperService;
         this.accountDao = accountDao;
         this.channelDao = channelDao;
         this.subscriptionDao = subscriptionDao;
         this.postDao = postDao;
         this.scheduler = scheduler;
+        this.gptClient = gptClient;
     }
 
     @PostMapping("subscribe")
@@ -206,5 +210,35 @@ public class ScraperController {
         }
 
         return ResponseEntity.accepted().body("In progress");
+    }
+
+    @GetMapping("test-iam")
+    public ResponseEntity<Object> testIam() {
+        return ResponseEntity.ok(gptClient.getToken());
+    }
+
+    @GetMapping("test-gpt")
+    public ResponseEntity<YandexGptResponse> testGpt(
+            @RequestParam String text
+    ) {
+        YandexGptRequest request = YandexGptRequest.builder()
+                .modelUri("gpt://b1gkl6cv2vsr4sdoojt9/yandexgpt/latest")
+                .completionOptions(YandexGptRequest.CompletionOptions.builder()
+                        .stream(false)
+                        .temperature(0.6)
+                        .maxTokens("2000")
+                        .build())
+                .message(YandexGptRequest.Message.builder()
+                        .role("system")
+                        .text("придумай 1-5 названий категорий для этой публикации. " +
+                                "максимальное количество слов в категории 4. " +
+                                "максимальное количество букв в названии категории 15")
+                        .build())
+                .message(YandexGptRequest.Message.builder()
+                        .role("user")
+                        .text(text)
+                        .build())
+                .build();
+        return ResponseEntity.ok(gptClient.query(request));
     }
 }

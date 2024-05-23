@@ -39,7 +39,6 @@ public class TelegramWebClientImpl implements TelegramWebClient, InitializingBea
 
     private final TelegramHtmlParser parser;
     private final HttpClient client;
-    private final ConfusingHeadersProvider confusingHeadersProvider;
     private final ScraperConfig scraperConfig;
     private RateLimiter limiter;
 
@@ -132,7 +131,7 @@ public class TelegramWebClientImpl implements TelegramWebClient, InitializingBea
 
     private Optional<String> sendGet(String url) {
         try {
-            ConfusingHeaders confusingHeaders = confusingHeadersProvider.provide();
+            ConfusingHeaders confusingHeaders = ConfusingHeadersProvider.provide();
             HttpRequest request = HttpRequest.newBuilder()
                     .header("User-Agent", confusingHeaders.getUniqueUserAgent())
                     .header("Accept", confusingHeaders.getAccept())
